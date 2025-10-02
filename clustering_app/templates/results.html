@@ -1,0 +1,502 @@
+{% extends "base.html" %}
+
+{% block title %}Clustering Analysis Results{% endblock %}
+
+{% block content %}
+<!-- Results Header -->
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="results-header bg-gradient-primary text-white p-4 rounded mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="mb-2">
+                            <i class="fas fa-chart-line me-3"></i>
+                            Clustering Analysis Results
+                        </h1>
+                        <p class="mb-0 opacity-75">
+                            <i class="fas fa-database me-1"></i>
+                            Dataset: {{ data_shape[0] }} records × {{ data_shape[1] }} features
+                        </p>
+                    </div>
+                    <div class="text-end">
+                        <a href="{{ url_for('index') }}" class="btn btn-light btn-lg">
+                            <i class="fas fa-upload me-2"></i>Upload New Data
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <!-- Quick Stats -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card bg-primary text-white">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <div>
+                        <h3 class="mb-0">{{ results.optimal_k }}</h3>
+                        <small>Optimal Clusters</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card bg-success text-white">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div>
+                        <h3 class="mb-0">{{ "%.3f"|format(results.kmeans_silhouette) }}</h3>
+                        <small>Silhouette Score</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card bg-info text-white">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div>
+                        <h3 class="mb-0">{{ results.segments|length }}</h3>
+                        <small>Customer Segments</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card bg-warning text-white">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <div>
+                        <h3 class="mb-0">{{ "%.3f"|format(results.adjusted_rand_index) }}</h3>
+                        <small>Algorithm Agreement</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-pills nav-justified mb-4" id="resultsTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="optimization-tab" data-bs-toggle="pill" data-bs-target="#optimization" 
+                    type="button" role="tab">
+                <i class="fas fa-search-plus me-2"></i>Optimization Analysis
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="clusters-tab" data-bs-toggle="pill" data-bs-target="#clusters" 
+                    type="button" role="tab">
+                <i class="fas fa-chart-scatter me-2"></i>Cluster Visualization
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="segments-tab" data-bs-toggle="pill" data-bs-target="#segments" 
+                    type="button" role="tab">
+                <i class="fas fa-users me-2"></i>Customer Segments
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="comparison-tab" data-bs-toggle="pill" data-bs-target="#comparison" 
+                    type="button" role="tab">
+                <i class="fas fa-balance-scale me-2"></i>Algorithm Comparison
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="resultsTabContent">
+        
+        <!-- Optimization Analysis Tab -->
+        <div class="tab-pane fade show active" id="optimization" role="tabpanel">
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-chart-line me-2"></i>Elbow Method Analysis
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="elbowPlot" style="height: 400px;"></div>
+                            <div class="mt-3">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>Optimal K (Elbow): {{ results.elbow_k }}</strong><br>
+                                    The elbow method finds the point where adding more clusters doesn't significantly reduce the within-cluster sum of squares.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if plots.silhouette %}
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-chart-bar me-2"></i>Silhouette Analysis
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="silhouettePlot" style="height: 400px;"></div>
+                            <div class="mt-3">
+                                <div class="alert alert-success">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <strong>Optimal K (Silhouette): {{ results.silhouette_k }}</strong><br>
+                                    Silhouette analysis measures how similar points are to their own cluster versus other clusters.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-dark text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-brain me-2"></i>Final Recommendation
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h4 class="text-primary">
+                                        <i class="fas fa-bullseye me-2"></i>
+                                        Recommended Number of Clusters: <span class="badge bg-primary fs-5">{{ results.optimal_k }}</span>
+                                    </h4>
+                                    <p class="mb-0">
+                                        This recommendation is based on a combined analysis of both elbow and silhouette methods, 
+                                        providing the optimal balance between cluster cohesion and separation.
+                                    </p>
+                                </div>
+                                <div class="col-md-4 text-md-end">
+                                    <div class="recommendation-score">
+                                        <div class="score-circle bg-primary text-white">
+                                            {{ "%.1f"|format(results.kmeans_silhouette * 100) }}%
+                                        </div>
+                                        <small class="text-muted">Quality Score</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cluster Visualization Tab -->
+        <div class="tab-pane fade" id="clusters" role="tabpanel">
+            <div class="row">
+                <div class="col-lg-8 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-chart-scatter me-2"></i>Customer Clusters (K-Means)
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="clustersPlot" style="height: 500px;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0">
+                                <i class="fas fa-pie-chart me-2"></i>Segment Distribution
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="piePlot" style="height: 500px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Segments Tab -->
+        <div class="tab-pane fade" id="segments" role="tabpanel">
+            {% if results.segments %}
+            <div class="row">
+                {% for segment_name, segment_data in results.segments.items() %}
+                <div class="col-lg-6 col-xl-4 mb-4">
+                    <div class="card h-100 segment-card priority-{{ segment_data.priority }}">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="fas fa-users me-2"></i>{{ segment_name }}
+                            </h5>
+                            <span class="badge bg-primary">
+                                Priority {{ segment_data.priority }}
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <h6 class="text-primary">{{ segment_data.category }}</h6>
+                                <div class="progress mb-2">
+                                    <div class="progress-bar" style="width: {{ segment_data.percentage }}%"></div>
+                                </div>
+                                <small class="text-muted">
+                                    {{ segment_data.size }} customers ({{ "%.1f"|format(segment_data.percentage) }}%)
+                                </small>
+                            </div>
+                            
+                            {% if segment_data.avg_age %}
+                            <div class="mb-3">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <small class="text-muted">Average Age</small>
+                                        <div class="fw-bold">{{ "%.1f"|format(segment_data.avg_age) }} years</div>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted">Age Range</small>
+                                        <div class="fw-bold">±{{ "%.1f"|format(segment_data.age_std) }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="mb-3">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <small class="text-muted">Avg Income</small>
+                                        <div class="fw-bold text-success">
+                                            ${{ "%.0f"|format(segment_data.avg_income) }}k
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted">Spending Score</small>
+                                        <div class="fw-bold text-warning">
+                                            {{ "%.1f"|format(segment_data.avg_spending) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <small class="text-muted">ROI Potential</small>
+                                <div class="fw-bold text-info">{{ "%.0f"|format(segment_data.roi_potential) }}</div>
+                            </div>
+                            
+                            {% if segment_data.gender_dist %}
+                            <div class="mb-3">
+                                <small class="text-muted">Gender Distribution</small>
+                                {% for gender, count in segment_data.gender_dist.items() %}
+                                <div class="d-flex justify-content-between">
+                                    <span>{{ gender }}</span>
+                                    <span>{{ count }} ({{ "%.0f"|format((count/segment_data.size)*100) }}%)</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            
+                            <div class="mt-auto">
+                                <h6 class="text-primary mb-2">Marketing Strategy:</h6>
+                                <p class="small text-muted mb-0">{{ segment_data.strategy }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Algorithm Comparison Tab -->
+        <div class="tab-pane fade" id="comparison" role="tabpanel">
+            <div class="row">
+                <div class="col-lg-8 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-balance-scale me-2"></i>Algorithm Performance Comparison
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Metric</th>
+                                            <th>K-Means</th>
+                                            <th>Agglomerative</th>
+                                            <th>Winner</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Silhouette Score</strong> (higher is better)</td>
+                                            <td>{{ "%.4f"|format(results.kmeans_silhouette) }}</td>
+                                            <td>{{ "%.4f"|format(results.agg_silhouette) }}</td>
+                                            <td>
+                                                {% if results.kmeans_silhouette > results.agg_silhouette %}
+                                                    <span class="badge bg-success">K-Means</span>
+                                                {% else %}
+                                                    <span class="badge bg-success">Agglomerative</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Calinski-Harabasz Index</strong> (higher is better)</td>
+                                            <td>{{ "%.2f"|format(results.calinski_harabasz_kmeans) }}</td>
+                                            <td>{{ "%.2f"|format(results.calinski_harabasz_agg) }}</td>
+                                            <td>
+                                                {% if results.calinski_harabasz_kmeans > results.calinski_harabasz_agg %}
+                                                    <span class="badge bg-success">K-Means</span>
+                                                {% else %}
+                                                    <span class="badge bg-success">Agglomerative</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Davies-Bouldin Index</strong> (lower is better)</td>
+                                            <td>{{ "%.4f"|format(results.davies_bouldin_kmeans) }}</td>
+                                            <td>{{ "%.4f"|format(results.davies_bouldin_agg) }}</td>
+                                            <td>
+                                                {% if results.davies_bouldin_kmeans < results.davies_bouldin_agg %}
+                                                    <span class="badge bg-success">K-Means</span>
+                                                {% else %}
+                                                    <span class="badge bg-success">Agglomerative</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-trophy me-2"></i>Overall Winner
+                            </h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="winner-badge mb-3">
+                                <i class="fas fa-crown fa-3x text-warning"></i>
+                            </div>
+                            <h4 class="text-primary">K-Means Algorithm</h4>
+                            <p class="text-muted">
+                                Performs best across multiple evaluation metrics for this dataset.
+                            </p>
+                            
+                            <div class="mt-4">
+                                <h6>Algorithm Agreement</h6>
+                                <div class="agreement-score">
+                                    {{ "%.1f"|format(results.adjusted_rand_index * 100) }}%
+                                </div>
+                                <small class="text-muted">
+                                    {% if results.adjusted_rand_index > 0.8 %}
+                                        High agreement between algorithms
+                                    {% elif results.adjusted_rand_index > 0.6 %}
+                                        Good agreement between algorithms
+                                    {% else %}
+                                        Moderate agreement between algorithms
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if results.dbscan_silhouette and results.dbscan_silhouette > -1 %}
+                    <div class="card mt-4">
+                        <div class="card-header bg-dark text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-search me-2"></i>DBSCAN Results
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="text-center">
+                                <h4 class="text-info">{{ "%.4f"|format(results.dbscan_silhouette) }}</h4>
+                                <p class="text-muted mb-0">Silhouette Score</p>
+                                <small class="text-muted">
+                                    DBSCAN identified density-based clusters and outliers
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row mt-4">
+        <div class="col-12 text-center">
+            <a href="{{ url_for('download_report') }}" class="btn btn-success btn-lg me-3">
+                <i class="fas fa-download me-2"></i>Download Report
+            </a>
+            <a href="{{ url_for('index') }}" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-upload me-2"></i>Analyze New Dataset
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Plot the visualizations
+{% if plots.elbow %}
+var elbowData = {{ plots.elbow|safe }};
+Plotly.newPlot('elbowPlot', elbowData.data, elbowData.layout, {responsive: true});
+{% endif %}
+
+{% if plots.silhouette %}
+var silhouetteData = {{ plots.silhouette|safe }};
+Plotly.newPlot('silhouettePlot', silhouetteData.data, silhouetteData.layout, {responsive: true});
+{% endif %}
+
+{% if plots.clusters %}
+var clustersData = {{ plots.clusters|safe }};
+Plotly.newPlot('clustersPlot', clustersData.data, clustersData.layout, {responsive: true});
+{% endif %}
+
+{% if plots.pie %}
+var pieData = {{ plots.pie|safe }};
+Plotly.newPlot('piePlot', pieData.data, pieData.layout, {responsive: true});
+{% endif %}
+
+// Tab switching with URL hash
+window.addEventListener('hashchange', function() {
+    var hash = window.location.hash.substring(1);
+    if (hash) {
+        var tab = document.querySelector(`#${hash}-tab`);
+        if (tab) {
+            var tabTrigger = new bootstrap.Tab(tab);
+            tabTrigger.show();
+        }
+    }
+});
+
+// Set hash when tab is shown
+document.querySelectorAll('[data-bs-toggle="pill"]').forEach(function(tab) {
+    tab.addEventListener('shown.bs.tab', function(event) {
+        var target = event.target.getAttribute('data-bs-target').substring(1);
+        window.location.hash = target;
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,493 @@
+{% extends "base.html" %}
+
+{% block title %}About - ClusterAI{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-about {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 4rem 0;
+    }
+    
+    .methodology-card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        margin-bottom: 2rem;
+    }
+    
+    .methodology-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+    
+    .algorithm-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+        margin-bottom: 1rem;
+    }
+    
+    .step-number {
+        background: var(--gradient);
+        color: white;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 1rem;
+    }
+    
+    .feature-list {
+        list-style: none;
+        padding-left: 0;
+    }
+    
+    .feature-list li {
+        margin-bottom: 0.75rem;
+        padding-left: 2rem;
+        position: relative;
+    }
+    
+    .feature-list li::before {
+        content: "\f00c";
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        color: var(--primary-color);
+        position: absolute;
+        left: 0;
+    }
+    
+    .code-example {
+        background: #1e293b;
+        color: #e2e8f0;
+        padding: 1rem;
+        border-radius: 8px;
+        font-family: 'Courier New', monospace;
+        margin: 1rem 0;
+    }
+    
+    .metric-explanation {
+        background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+        border-left: 4px solid #0ea5e9;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-about">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold">About ClusterAI</h1>
+                <p class="lead">Advanced customer segmentation using machine learning algorithms to unlock actionable business insights</p>
+            </div>
+            <div class="col-lg-4">
+                <div class="text-center">
+                    <i class="fas fa-brain" style="font-size: 6rem; opacity: 0.3;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <!-- What We Do -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4">What We Do</h2>
+            <div class="row">
+                <div class="col-lg-4 text-center mb-4">
+                    <div class="algorithm-icon mx-auto" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                        <i class="fas fa-chart-scatter"></i>
+                    </div>
+                    <h4>Data Analysis</h4>
+                    <p class="text-muted">We analyze your customer data to identify hidden patterns and relationships using advanced statistical methods.</p>
+                </div>
+                <div class="col-lg-4 text-center mb-4">
+                    <div class="algorithm-icon mx-auto" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h4>Customer Segmentation</h4>
+                    <p class="text-muted">Group customers into meaningful segments based on behavior, demographics, and purchasing patterns.</p>
+                </div>
+                <div class="col-lg-4 text-center mb-4">
+                    <div class="algorithm-icon mx-auto" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h4>Business Insights</h4>
+                    <p class="text-muted">Generate actionable recommendations and strategies for each customer segment to maximize ROI.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Methodology -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4">Our Methodology</h2>
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <div class="methodology-card card h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="step-number">1</div>
+                                <h5 class="mb-0">Data Preprocessing</h5>
+                            </div>
+                            <ul class="feature-list">
+                                <li>Automatic data cleaning and validation</li>
+                                <li>Feature scaling and normalization</li>
+                                <li>Missing value handling</li>
+                                <li>Outlier detection and treatment</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 mb-4">
+                    <div class="methodology-card card h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="step-number">2</div>
+                                <h5 class="mb-0">Optimal Clustering</h5>
+                            </div>
+                            <ul class="feature-list">
+                                <li>Elbow method for K determination</li>
+                                <li>Silhouette analysis validation</li>
+                                <li>Multiple algorithm comparison</li>
+                                <li>Best model selection</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 mb-4">
+                    <div class="methodology-card card h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="step-number">3</div>
+                                <h5 class="mb-0">Business Intelligence</h5>
+                            </div>
+                            <ul class="feature-list">
+                                <li>Segment profiling and analysis</li>
+                                <li>ROI potential calculation</li>
+                                <li>Marketing strategy generation</li>
+                                <li>Implementation timeline</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Algorithms -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4">Machine Learning Algorithms</h2>
+            
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="card methodology-card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-circle text-primary me-2"></i>K-Means Clustering
+                            </h5>
+                            <p class="card-text">Partitions data into K clusters where each observation belongs to the cluster with the nearest mean (centroid).</p>
+                            
+                            <h6>Advantages:</h6>
+                            <ul>
+                                <li>Fast and efficient for large datasets</li>
+                                <li>Works well with spherical clusters</li>
+                                <li>Simple to understand and implement</li>
+                            </ul>
+                            
+                            <div class="code-example">
+                                <code>
+from sklearn.cluster import KMeans<br>
+kmeans = KMeans(n_clusters=k, random_state=42)<br>
+clusters = kmeans.fit_predict(scaled_data)
+                                </code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6 mb-4">
+                    <div class="card methodology-card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-project-diagram text-success me-2"></i>Agglomerative Clustering
+                            </h5>
+                            <p class="card-text">Hierarchical clustering that builds nested clusters by merging or splitting them successively.</p>
+                            
+                            <h6>Advantages:</h6>
+                            <ul>
+                                <li>No need to specify number of clusters upfront</li>
+                                <li>Creates a hierarchy of clusters</li>
+                                <li>Works with any distance metric</li>
+                            </ul>
+                            
+                            <div class="code-example">
+                                <code>
+from sklearn.cluster import AgglomerativeClustering<br>
+agg = AgglomerativeClustering(n_clusters=k)<br>
+clusters = agg.fit_predict(scaled_data)
+                                </code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6 mb-4">
+                    <div class="card methodology-card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-search text-warning me-2"></i>DBSCAN
+                            </h5>
+                            <p class="card-text">Density-Based Spatial Clustering finds clusters of varying shapes and identifies outliers as noise.</p>
+                            
+                            <h6>Advantages:</h6>
+                            <ul>
+                                <li>Finds clusters of arbitrary shape</li>
+                                <li>Automatically determines cluster count</li>
+                                <li>Robust to outliers</li>
+                            </ul>
+                            
+                            <div class="code-example">
+                                <code>
+from sklearn.cluster import DBSCAN<br>
+dbscan = DBSCAN(eps=0.5, min_samples=5)<br>
+clusters = dbscan.fit_predict(scaled_data)
+                                </code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6 mb-4">
+                    <div class="card methodology-card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-chart-line text-info me-2"></i>Elbow Method + Silhouette
+                            </h5>
+                            <p class="card-text">Combined approach to find optimal number of clusters using mathematical optimization techniques.</p>
+                            
+                            <h6>Metrics Used:</h6>
+                            <ul>
+                                <li>Within-Cluster Sum of Squares (WCSS)</li>
+                                <li>Silhouette Score</li>
+                                <li>Calinski-Harabasz Index</li>
+                            </ul>
+                            
+                            <div class="code-example">
+                                <code>
+from kneed import KneeLocator<br>
+knee = KneeLocator(k_range, wcss, curve='convex')<br>
+optimal_k = knee.elbow
+                                </code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Evaluation Metrics -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4">Evaluation Metrics</h2>
+            
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <div class="metric-explanation">
+                        <h5><i class="fas fa-chart-area me-2"></i>Silhouette Score</h5>
+                        <p><strong>Range:</strong> -1 to 1 (Higher is better)</p>
+                        <p>Measures how similar an object is to its own cluster compared to other clusters. A high value indicates that the object is well matched to its own cluster.</p>
+                        <p><strong>Formula:</strong> (b - a) / max(a, b)</p>
+                        <p><em>Where a = mean distance to points in same cluster, b = mean distance to nearest cluster</em></p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 mb-4">
+                    <div class="metric-explanation">
+                        <h5><i class="fas fa-crosshairs me-2"></i>Calinski-Harabasz Index</h5>
+                        <p><strong>Range:</strong> 0 to ∞ (Higher is better)</p>
+                        <p>Ratio of the sum of between-clusters dispersion and inter-cluster dispersion. Higher values indicate better defined clusters.</p>
+                        <p><strong>Also known as:</strong> Variance Ratio Criterion</p>
+                        <p><em>Evaluates cluster validity based on average between and within cluster sum of squares</em></p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 mb-4">
+                    <div class="metric-explanation">
+                        <h5><i class="fas fa-compress-alt me-2"></i>Davies-Bouldin Index</h5>
+                        <p><strong>Range:</strong> 0 to ∞ (Lower is better)</p>
+                        <p>Average similarity measure of each cluster with its most similar cluster. Lower values indicate better clustering.</p>
+                        <p><strong>Measures:</strong> Cluster separation and compactness</p>
+                        <p><em>Based on ratio of within-cluster distances to between-cluster distances</em></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Business Impact -->
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <h2>Business Impact</h2>
+            <p class="text-muted mb-4">Our clustering analysis provides direct business value through:</p>
+            
+            <div class="card border-0 bg-light mb-3">
+                <div class="card-body">
+                    <h5><i class="fas fa-bullseye text-primary me-2"></i>Targeted Marketing</h5>
+                    <p class="mb-0">Create personalized marketing campaigns for each customer segment, increasing conversion rates by 25-40%.</p>
+                </div>
+            </div>
+            
+            <div class="card border-0 bg-light mb-3">
+                <div class="card-body">
+                    <h5><i class="fas fa-chart-line text-success me-2"></i>Revenue Optimization</h5>
+                    <p class="mb-0">Focus resources on high-value segments and optimize pricing strategies for maximum profitability.</p>
+                </div>
+            </div>
+            
+            <div class="card border-0 bg-light mb-3">
+                <div class="card-body">
+                    <h5><i class="fas fa-users text-info me-2"></i>Customer Retention</h5>
+                    <p class="mb-0">Identify at-risk customers and develop retention strategies to reduce churn by 15-30%.</p>
+                </div>
+            </div>
+            
+            <div class="card border-0 bg-light">
+                <div class="card-body">
+                    <h5><i class="fas fa-shopping-cart text-warning me-2"></i>Product Development</h5>
+                    <p class="mb-0">Guide product development based on segment-specific needs and preferences.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <h2>Use Cases</h2>
+            <div class="accordion" id="useCasesAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#retail">
+                            <i class="fas fa-store me-2"></i>Retail & E-commerce
+                        </button>
+                    </h2>
+                    <div id="retail" class="accordion-collapse collapse show" data-bs-parent="#useCasesAccordion">
+                        <div class="accordion-body">
+                            Segment customers based on purchase behavior, frequency, and value. Create targeted promotions, optimize inventory, and improve customer experience.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#banking">
+                            <i class="fas fa-university me-2"></i>Banking & Finance
+                        </button>
+                    </h2>
+                    <div id="banking" class="accordion-collapse collapse" data-bs-parent="#useCasesAccordion">
+                        <div class="accordion-body">
+                            Risk assessment, credit scoring, and personalized financial products. Identify high-value customers and cross-selling opportunities.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#healthcare">
+                            <i class="fas fa-heartbeat me-2"></i>Healthcare
+                        </button>
+                    </h2>
+                    <div id="healthcare" class="accordion-collapse collapse" data-bs-parent="#useCasesAccordion">
+                        <div class="accordion-body">
+                            Patient segmentation for personalized treatment plans, resource allocation, and preventive care programs.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#telecom">
+                            <i class="fas fa-mobile-alt me-2"></i>Telecommunications
+                        </button>
+                    </h2>
+                    <div id="telecom" class="accordion-collapse collapse" data-bs-parent="#useCasesAccordion">
+                        <div class="accordion-body">
+                            Customer lifecycle management, churn prediction, and service optimization based on usage patterns.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Technical Specifications -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card methodology-card">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">Technical Specifications</h2>
+                    
+                    <div class="row">
+                        <div class="col-lg-3 text-center">
+                            <i class="fas fa-code" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+                            <h5>Python & Scikit-learn</h5>
+                            <p class="text-muted">Built with industry-standard machine learning libraries</p>
+                        </div>
+                        <div class="col-lg-3 text-center">
+                            <i class="fas fa-chart-bar" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+                            <h5>Interactive Visualizations</h5>
+                            <p class="text-muted">Powered by Plotly for dynamic charts and graphs</p>
+                        </div>
+                        <div class="col-lg-3 text-center">
+                            <i class="fas fa-cloud" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+                            <h5>Scalable Architecture</h5>
+                            <p class="text-muted">Flask-based web application with modular design</p>
+                        </div>
+                        <div class="col-lg-3 text-center">
+                            <i class="fas fa-shield-alt" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+                            <h5>Secure & Reliable</h5>
+                            <p class="text-muted">Data validation and error handling throughout</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

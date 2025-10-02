@@ -1,0 +1,695 @@
+{% extends "base.html" %}
+
+{% block title %}🎯 Customer Segmentation Analysis - ClusterAI{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #4f46e5;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+        --info-color: #3b82f6;
+        --light-bg: #f8fafc;
+        --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    .results-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .results-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 3rem;
+        margin-bottom: 2rem;
+        text-align: center;
+        box-shadow: var(--card-shadow);
+    }
+
+    .results-header h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1rem;
+    }
+
+    .results-header p {
+        font-size: 1.1rem;
+        color: #6b7280;
+        margin-bottom: 0;
+    }
+
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .metric-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: var(--card-shadow);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .metric-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), #8b5cf6);
+    }
+
+    .metric-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--card-shadow-hover);
+    }
+
+    .metric-number {
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .metric-label {
+        color: #6b7280;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .section-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        margin-bottom: 2rem;
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .section-card:hover {
+        box-shadow: var(--card-shadow-hover);
+    }
+
+    .section-header {
+        background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+        color: white;
+        padding: 1.5rem 2rem;
+        font-weight: 700;
+        font-size: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .section-content {
+        padding: 2rem;
+    }
+
+    .tab-container {
+        margin-bottom: 2rem;
+    }
+
+    .tab-buttons {
+        display: flex;
+        background: var(--light-bg);
+        border-radius: 12px;
+        padding: 0.5rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .tab-button {
+        background: transparent;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: #6b7280;
+    }
+
+    .tab-button.active {
+        background: white;
+        color: var(--primary-color);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .cluster-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-left: 5px solid var(--primary-color);
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .cluster-card:hover {
+        transform: translateX(8px);
+        box-shadow: var(--card-shadow);
+    }
+
+    .cluster-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .cluster-name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .cluster-size {
+        background: var(--info-color);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+
+    .cluster-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 0.75rem;
+        background: var(--light-bg);
+        border-radius: 8px;
+    }
+
+    .stat-value {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 0.25rem;
+    }
+
+    .recommendations-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .recommendations-list li {
+        background: var(--light-bg);
+        margin-bottom: 0.5rem;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid var(--success-color);
+        position: relative;
+    }
+
+    .recommendations-list li::before {
+        content: '💡';
+        margin-right: 0.5rem;
+    }
+
+    .export-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .export-btn {
+        background: linear-gradient(135deg, var(--success-color), #059669);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .export-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--card-shadow);
+        color: white;
+        text-decoration: none;
+    }
+
+    .priority-high { border-left-color: var(--danger-color); }
+    .priority-medium { border-left-color: var(--warning-color); }
+    .priority-low { border-left-color: var(--info-color); }
+
+    .insight-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        background: var(--warning-color);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .visualization-container {
+        background: white;
+        border-radius: 16px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .health-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+
+    .health-excellent { background: #dcfce7; color: #166534; }
+    .health-good { background: #dbeafe; color: #1e40af; }
+    .health-fair { background: #fef3c7; color: #92400e; }
+    .health-poor { background: #fee2e2; color: #991b1b; }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+        .results-container {
+            padding: 1rem;
+        }
+        
+        .results-header {
+            padding: 2rem;
+        }
+        
+        .results-header h1 {
+            font-size: 2rem;
+        }
+        
+        .metrics-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .tab-buttons {
+            flex-direction: column;
+        }
+        
+        .export-buttons {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="results-container">
+    <!-- Header Section -->
+    <div class="results-header">
+        <h1>🎯 Customer Segmentation Analysis</h1>
+        <p><strong>Dataset:</strong> {{ filename }} | <strong>Analysis Date:</strong> {{ analysis.data_info.analysis_timestamp }}</p>
+        
+        <!-- Quality Indicator -->
+        {% if analysis.health_metrics.success %}
+        <div class="health-indicator health-{{ analysis.health_metrics.overall_health.quality_score.lower() }}" style="margin-top: 1rem;">
+            <span>🔍</span>
+            <span>Clustering Quality: {{ analysis.health_metrics.overall_health.quality_score }}</span>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Key Metrics Grid -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-number">{{ analysis.data_info.shape[0] }}</div>
+            <div class="metric-label">Total Customers</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-number">{{ analysis.segments_analysis.segments|length }}</div>
+            <div class="metric-label">Segments Identified</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-number">{{ "%.1f"|format(analysis.clustering_results.kmeans_silhouette * 100) }}%</div>
+            <div class="metric-label">Clustering Quality</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-number">{{ analysis.data_info.features|length }}</div>
+            <div class="metric-label">Features Analyzed</div>
+        </div>
+    </div>
+
+    <!-- Executive Summary -->
+    {% if analysis.insights_summary %}
+    <div class="section-card">
+        <div class="section-header">
+            <span>📊</span>
+            <span>Executive Summary</span>
+        </div>
+        <div class="section-content">
+            <div class="tab-container">
+                <div class="tab-buttons">
+                    <button class="tab-button active" onclick="showTab('summary-overview')">📋 Overview</button>
+                    <button class="tab-button" onclick="showTab('summary-insights')">💡 Key Insights</button>
+                    <button class="tab-button" onclick="showTab('summary-recommendations')">🎯 Recommendations</button>
+                </div>
+                
+                <div id="summary-overview" class="tab-content active">
+                    <div class="cluster-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">{{ analysis.insights_summary.executive_summary.total_customers_analyzed }}</div>
+                            <div class="stat-label">Customers Analyzed</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">{{ analysis.insights_summary.executive_summary.segments_identified }}</div>
+                            <div class="stat-label">Segments Found</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">{{ "%.1f"|format(analysis.insights_summary.executive_summary.largest_segment.percentage) }}%</div>
+                            <div class="stat-label">Largest Segment</div>
+                        </div>
+                    </div>
+                    
+                    <p><strong>Largest Segment:</strong> {{ analysis.insights_summary.executive_summary.largest_segment.name }} ({{ analysis.insights_summary.executive_summary.largest_segment.size }} customers)</p>
+                    <p><strong>Highest Value Segment:</strong> {{ analysis.insights_summary.executive_summary.highest_value_segment.name }} (ROI Score: {{ "%.1f"|format(analysis.insights_summary.executive_summary.highest_value_segment.roi_score) }})</p>
+                </div>
+                
+                <div id="summary-insights" class="tab-content">
+                    <ul class="recommendations-list">
+                        {% for insight in analysis.insights_summary.key_insights %}
+                        <li>{{ insight }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                
+                <div id="summary-recommendations" class="tab-content">
+                    <ul class="recommendations-list">
+                        {% for rec in analysis.insights_summary.strategic_recommendations %}
+                        <li>{{ rec }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Interactive Visualizations -->
+    <div class="section-card">
+        <div class="section-header">
+            <span>📈</span>
+            <span>Interactive Data Visualizations</span>
+        </div>
+        <div class="section-content">
+            <div class="tab-container">
+                <div class="tab-buttons">
+                    <button class="tab-button active" onclick="showTab('viz-clusters')">🎯 Customer Segments</button>
+                    <button class="tab-button" onclick="showTab('viz-distribution')">📊 Size Distribution</button>
+                    <button class="tab-button" onclick="showTab('viz-optimization')">🔍 Optimization</button>
+                    <button class="tab-button" onclick="showTab('viz-features')">📈 Feature Analysis</button>
+                    <button class="tab-button" onclick="showTab('viz-heatmap')">🌡️ Characteristics</button>
+                </div>
+                
+                <div id="viz-clusters" class="tab-content active">
+                    <div class="visualization-container">
+                        {{ analysis.visualizations.cluster_scatter|safe }}
+                    </div>
+                </div>
+                
+                <div id="viz-distribution" class="tab-content">
+                    <div class="visualization-container">
+                        {{ analysis.visualizations.cluster_sizes|safe }}
+                    </div>
+                </div>
+                
+                <div id="viz-optimization" class="tab-content">
+                    <div class="visualization-container">
+                        {{ analysis.visualizations.optimization_analysis|safe }}
+                    </div>
+                </div>
+                
+                <div id="viz-features" class="tab-content">
+                    <div class="visualization-container">
+                        {{ analysis.visualizations.feature_distribution|safe }}
+                    </div>
+                </div>
+                
+                <div id="viz-heatmap" class="tab-content">
+                    <div class="visualization-container">
+                        {{ analysis.visualizations.characteristics_heatmap|safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Segments Detail -->
+    <div class="section-card">
+        <div class="section-header">
+            <span>👥</span>
+            <span>Customer Segment Profiles</span>
+        </div>
+        <div class="section-content">
+            {% for segment in analysis.segments_analysis.segments %}
+            <div class="cluster-card priority-{{ segment.roi_potential|int // 50 + 1 == 3 and 'high' or (segment.roi_potential|int // 50 + 1 == 2 and 'medium' or 'low') }}">
+                <div class="cluster-header">
+                    <div class="cluster-name">{{ segment.category }}</div>
+                    <div class="cluster-size">{{ segment.size }} customers ({{ "%.1f"|format(segment.percentage) }}%)</div>
+                </div>
+                
+                <div class="cluster-stats">
+                    {% for feature, value in segment.avg_values.items() %}
+                    <div class="stat-item">
+                        <div class="stat-value">{{ "%.1f"|format(value) }}</div>
+                        <div class="stat-label">Avg {{ feature }}</div>
+                    </div>
+                    {% endfor %}
+                    
+                    {% if segment.age_analysis.avg_age %}
+                    <div class="stat-item">
+                        <div class="stat-value">{{ "%.1f"|format(segment.age_analysis.avg_age) }}</div>
+                        <div class="stat-label">Avg Age</div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="stat-item">
+                        <div class="stat-value">{{ "%.1f"|format(segment.roi_potential) }}</div>
+                        <div class="stat-label">ROI Score</div>
+                    </div>
+                </div>
+                
+                <div class="insight-badge">
+                    💼 Strategy
+                </div>
+                <p>{{ segment.strategy }}</p>
+                
+                {% if segment.gender_analysis.distribution %}
+                <div class="insight-badge">
+                    👤 Demographics
+                </div>
+                <p>
+                    {% for gender, count in segment.gender_analysis.distribution.items() %}
+                    {{ gender }}: {{ count }} ({{ "%.1f"|format(count * 100 / segment.size) }}%)
+                    {% if not loop.last %} | {% endif %}
+                    {% endfor %}
+                </p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Business Recommendations -->
+    {% if analysis.business_recommendations %}
+    <div class="section-card">
+        <div class="section-header">
+            <span>💼</span>
+            <span>Business Action Plan</span>
+        </div>
+        <div class="section-content">
+            <div class="tab-container">
+                <div class="tab-buttons">
+                    <button class="tab-button active" onclick="showTab('business-priority')">⭐ Priority Segments</button>
+                    <button class="tab-button" onclick="showTab('business-timeline')">📅 Implementation</button>
+                    <button class="tab-button" onclick="showTab('business-metrics')">📊 Success Metrics</button>
+                </div>
+                
+                <div id="business-priority" class="tab-content active">
+                    {% for segment in analysis.business_recommendations.priority_segments %}
+                    <div class="cluster-card">
+                        <div class="cluster-header">
+                            <div class="cluster-name">{{ segment.category }}</div>
+                            <div class="cluster-size">ROI: {{ "%.1f"|format(segment.roi_potential) }}</div>
+                        </div>
+                        <p>{{ segment.strategy }}</p>
+                        <p><strong>Size:</strong> {{ segment.size }} customers</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div id="business-timeline" class="tab-content">
+                    {% for timeline in analysis.business_recommendations.implementation_timeline %}
+                    <div class="cluster-card">
+                        <div class="cluster-header">
+                            <div class="cluster-name">{{ timeline.period }}</div>
+                            <div class="cluster-size">{{ timeline.owner }}</div>
+                        </div>
+                        <p>{{ timeline.action }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div id="business-metrics" class="tab-content">
+                    <ul class="recommendations-list">
+                        {% for metric in analysis.business_recommendations.success_metrics %}
+                        <li>{{ metric }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Export Section -->
+    <div class="section-card">
+        <div class="section-header">
+            <span>💾</span>
+            <span>Export & Download</span>
+        </div>
+        <div class="section-content">
+            <p>Download your analysis results in various formats for further use and reporting.</p>
+            <div class="export-buttons">
+                <a href="/export/csv" class="export-btn">
+                    <span>📊</span>
+                    <span>Download CSV</span>
+                </a>
+                <a href="/api/export/json" class="export-btn">
+                    <span>🔧</span>
+                    <span>Download JSON</span>
+                </a>
+                <button class="export-btn" onclick="window.print()">
+                    <span>🖨️</span>
+                    <span>Print Report</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div style="text-align: center; margin-top: 3rem;">
+        <a href="/" class="export-btn" style="background: linear-gradient(135deg, var(--primary-color), #8b5cf6);">
+            <span>🔄</span>
+            <span>Analyze New Dataset</span>
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function showTab(tabId) {
+    // Hide all tab contents
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(content => {
+        content.classList.remove('active');
+    });
+    
+    // Remove active class from all buttons
+    const tabButtons = document.querySelectorAll('.tab-button');
+    tabButtons.forEach(button => {
+        button.classList.remove('active');
+    });
+    
+    // Show selected tab
+    document.getElementById(tabId).classList.add('active');
+    
+    // Add active class to clicked button
+    event.target.classList.add('active');
+}
+
+// Add some interactive features
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate metric cards on load
+    const metricCards = document.querySelectorAll('.metric-card');
+    metricCards.forEach((card, index) => {
+        setTimeout(() => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'all 0.6s ease';
+            
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
+        }, index * 200);
+    });
+    
+    // Add click animation to export buttons
+    const exportButtons = document.querySelectorAll('.export-btn');
+    exportButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 150);
+        });
+    });
+});
+</script>
+{% endblock %}

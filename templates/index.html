@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+
+{% block title %}ClusterAI - Customer Segmentation Analysis{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h1 class="hero-title">
+                    <i class="fas fa-brain me-3"></i>
+                    ClusterAI
+                </h1>
+                <p class="hero-subtitle">
+                    🚀 Advanced Customer Segmentation with AI-powered insights, interactive visualizations, 
+                    business recommendations, and actionable strategies. Transform your customer data into growth opportunities.
+                </p>
+                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                    <a href="{{ url_for('upload_file') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-upload me-2"></i>
+                        Analyze Your Data
+                    </a>
+                    <a href="{{ url_for('demo') }}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-rocket me-2"></i>
+                        🎯 Live Demo
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stats Row -->
+        <div class="row mt-5">
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <span class="stats-number">3</span>
+                    <div class="stats-label">Clustering Algorithms</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <span class="stats-number">5+</span>
+                    <div class="stats-label">Analysis Methods</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <span class="stats-number">∞</span>
+                    <div class="stats-label">Customer Insights</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <span class="stats-number">99%</span>
+                    <div class="stats-label">Accuracy</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h4 class="card-title">Smart Analysis</h4>
+                        <p class="card-text">
+                            Automatically determines optimal number of clusters using Elbow Method, 
+                            Silhouette Analysis, and combined scoring techniques.
+                        </p>
+                        <ul class="list-unstyled text-start mt-3">
+                            <li><i class="fas fa-check text-success me-2"></i> Elbow Method Detection</li>
+                            <li><i class="fas fa-check text-success me-2"></i> Silhouette Score Analysis</li>
+                            <li><i class="fas fa-check text-success me-2"></i> Combined Optimization</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h4 class="card-title">📊 Interactive Visualizations</h4>
+                        <p class="card-text">
+                            Explore your data with beautiful, interactive charts including cluster plots, 
+                            heatmaps, distributions, and optimization analysis.
+                        </p>
+                        <ul class="list-unstyled text-start mt-3">
+                            <li><i class="fas fa-check text-success me-2"></i> 3D Cluster Visualizations</li>
+                            <li><i class="fas fa-check text-success me-2"></i> Interactive Heatmaps</li>
+                            <li><i class="fas fa-check text-success me-2"></i> Feature Distribution Analysis</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <h4 class="card-title">🎯 Smart Recommendations</h4>
+                        <p class="card-text">
+                            AI-powered business insights with automatic cluster naming, ROI scoring, 
+                            marketing strategies, and actionable implementation plans.
+                        </p>
+                        <ul class="list-unstyled text-start mt-3">
+                            <li><i class="fas fa-check text-success me-2"></i> Automatic Cluster Naming</li>
+                            <li><i class="fas fa-check text-success me-2"></i> ROI Prioritization</li>
+                            <li><i class="fas fa-check text-success me-2"></i> Marketing Strategies</li>
+                            <li><i class="fas fa-check text-success me-2"></i> Implementation Timelines</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- How It Works -->
+        <div class="row mt-5">
+            <div class="col-12 text-center mb-5">
+                <h2 class="text-white mb-4">How It Works</h2>
+                <p class="text-white-50 fs-5">Simple 3-step process to unlock customer insights</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <span class="fw-bold fs-4">1</span>
+                        </div>
+                        <h5 class="card-title">Upload Your Data</h5>
+                        <p class="card-text">
+                            Upload your customer data in CSV or Excel format. 
+                            Our system automatically detects the relevant features for analysis.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <span class="fw-bold fs-4">2</span>
+                        </div>
+                        <h5 class="card-title">🤖 AI Analysis</h5>
+                        <p class="card-text">
+                            Advanced ML algorithms (K-Means, Agglomerative, DBSCAN) analyze your data, 
+                            optimize cluster numbers, and generate comprehensive customer profiles.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <span class="fw-bold fs-4">3</span>
+                        </div>
+                        <h5 class="card-title">📈 Get Insights</h5>
+                        <p class="card-text">
+                            Interactive dashboards, customer segment profiles, business recommendations, 
+                            export options, and implementation roadmaps ready for action.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- CTA Section -->
+        <div class="row mt-5">
+            <div class="col-12 text-center">
+                <div class="card">
+                    <div class="card-body p-5">
+                        <h3 class="card-title mb-4">Ready to Discover Your Customer Segments?</h3>
+                        <p class="card-text fs-5 mb-4 text-muted">
+                            Join thousands of businesses using AI-powered customer segmentation to boost their revenue by 20-30%
+                        </p>
+                        <div class="d-flex gap-3 justify-content-center flex-wrap">
+                            <a href="{{ url_for('upload_file') }}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-rocket me-2"></i>
+                                Start Analysis Now
+                            </a>
+                            <a href="{{ url_for('demo') }}" class="btn btn-outline-primary btn-lg">
+                                <i class="fas fa-eye me-2"></i>
+                                See Live Demo
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Add some interactive animations
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate stats numbers
+    const statsNumbers = document.querySelectorAll('.stats-number');
+    
+    function animateValue(element, start, end, duration) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const value = Math.floor(progress * (end - start) + start);
+            element.innerHTML = value === Infinity ? '∞' : value + (element.innerHTML.includes('%') ? '%' : '');
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+    
+    // Animate numbers when they come into view
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const element = entry.target;
+                const text = element.textContent;
+                if (text.includes('∞')) return;
+                
+                const value = parseInt(text.replace(/\D/g, '')) || 0;
+                if (value > 0) {
+                    animateValue(element, 0, value, 2000);
+                }
+                observer.unobserve(element);
+            }
+        });
+    });
+    
+    statsNumbers.forEach(num => observer.observe(num));
+    
+    // Add hover effects to cards
+    const cards = document.querySelectorAll('.card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-10px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Data - ClusterAI{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5 text-white">
+                <h2><i class="fas fa-upload me-3"></i>Upload Your Customer Data</h2>
+                <p class="lead">Upload your CSV or Excel file to get started with customer segmentation analysis</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-body p-5">
+                    <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" id="uploadForm">
+                        <div class="upload-area mb-4" id="uploadArea">
+                            <div class="upload-content">
+                                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                <h5 class="mb-3">Drag and drop your file here or click to browse</h5>
+                                <p class="text-muted mb-3">Supported formats: CSV, Excel (.xlsx, .xls)</p>
+                                <input type="file" class="form-control d-none" id="fileInput" name="file" accept=".csv,.xlsx,.xls">
+                                <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('fileInput').click()">
+                                    <i class="fas fa-folder-open me-2"></i>Choose File
+                                </button>
+                            </div>
+                            
+                            <div class="file-info d-none" id="fileInfo">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-file-csv fa-2x text-success me-3"></i>
+                                        <div>
+                                            <h6 class="mb-1" id="fileName">File name</h6>
+                                            <small class="text-muted" id="fileSize">File size</small>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeFile()">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-body">
+                                        <h6 class="card-title"><i class="fas fa-info-circle me-2"></i>Data Requirements</h6>
+                                        <ul class="small mb-0">
+                                            <li>At least 2 numeric columns for analysis</li>
+                                            <li>Customer ID column (optional but recommended)</li>
+                                            <li>Demographic data like Age, Gender (optional)</li>
+                                            <li>Financial data like Income, Spending Score</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-body">
+                                        <h6 class="card-title"><i class="fas fa-chart-line me-2"></i>What You'll Get</h6>
+                                        <ul class="small mb-0">
+                                            <li>Optimal cluster analysis</li>
+                                            <li>Customer segment profiles</li>
+                                            <li>Business recommendations</li>
+                                            <li>Interactive visualizations</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg me-3" id="analyzeBtn" disabled>
+                                <span class="spinner d-none me-2" id="spinner"></span>
+                                <i class="fas fa-chart-line me-2" id="analyzeIcon"></i>
+                                <span id="btnText">Analyze Data</span>
+                            </button>
+                            <a href="{{ url_for('demo') }}" class="btn btn-outline-primary btn-lg">
+                                <i class="fas fa-play me-2"></i>Try Demo Instead
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Sample Data Section -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-table me-2"></i>Expected Data Format
+                    </h5>
+                    <p class="card-text text-muted">Your data should look similar to this example:</p>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>CustomerID</th>
+                                    <th>Age</th>
+                                    <th>Gender</th>
+                                    <th>Annual Income (k$)</th>
+                                    <th>Spending Score (1-100)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>19</td>
+                                    <td>Male</td>
+                                    <td>15</td>
+                                    <td>39</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>21</td>
+                                    <td>Male</td>
+                                    <td>15</td>
+                                    <td>81</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>20</td>
+                                    <td>Female</td>
+                                    <td>16</td>
+                                    <td>6</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">... more rows ...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        <strong>Tip:</strong> The algorithm will automatically select the most relevant numeric columns for clustering analysis.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const fileInfo = document.getElementById('fileInfo');
+    const uploadContent = document.querySelector('.upload-content');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const uploadForm = document.getElementById('uploadForm');
+    const spinner = document.getElementById('spinner');
+    const analyzeIcon = document.getElementById('analyzeIcon');
+    const btnText = document.getElementById('btnText');
+    
+    // Drag and drop functionality
+    uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+    
+    uploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+    });
+    
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files;
+            handleFileSelect(files[0]);
+        }
+    });
+    
+    // Click to upload
+    uploadArea.addEventListener('click', function() {
+        fileInput.click();
+    });
+    
+    // File input change
+    fileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            handleFileSelect(this.files[0]);
+        }
+    });
+    
+    function handleFileSelect(file) {
+        const allowedTypes = ['text/csv', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+        const maxSize = 16 * 1024 * 1024; // 16MB
+        
+        if (!allowedTypes.includes(file.type) && !file.name.match(/\.(csv|xlsx|xls)$/i)) {
+            alert('Please select a CSV or Excel file.');
+            return;
+        }
+        
+        if (file.size > maxSize) {
+            alert('File size must be less than 16MB.');
+            return;
+        }
+        
+        // Show file info
+        document.getElementById('fileName').textContent = file.name;
+        document.getElementById('fileSize').textContent = formatFileSize(file.size);
+        
+        uploadContent.classList.add('d-none');
+        fileInfo.classList.remove('d-none');
+        analyzeBtn.disabled = false;
+    }
+    
+    // Remove file
+    window.removeFile = function() {
+        fileInput.value = '';
+        uploadContent.classList.remove('d-none');
+        fileInfo.classList.add('d-none');
+        analyzeBtn.disabled = true;
+    };
+    
+    // Format file size
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    // Form submission
+    uploadForm.addEventListener('submit', function() {
+        analyzeBtn.disabled = true;
+        spinner.classList.remove('d-none');
+        analyzeIcon.classList.add('d-none');
+        btnText.textContent = 'Analyzing...';
+    });
+});
+</script>
+{% endblock %}
